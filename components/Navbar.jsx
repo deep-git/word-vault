@@ -14,20 +14,39 @@ const Navbar = ({ main_page }) => {
 
     const [lightMode, setLightMode] = useState(typeof window !== "undefined" ? (window.localStorage.getItem("themeMode") === "light" ? true : false) : false);
     const [word, setWord] = useState("");
-    const [fontType, setFontType] = useState(typeof window !== "undefined" ? (localStorage.getItem("fonttheme") || "serif") : "serif");
+
+    const [local] = useState(() => {
+        if (typeof window !== "undefined") {
+            const from_localStorage = window.localStorage.getItem("fonttheme");
+            if (from_localStorage === null || from_localStorage === undefined) {
+                return "serif"
+            }
+
+            return `${from_localStorage}` ? from_localStorage : "serif"
+        }
+        return ''
+    });
+
+    const [fontType, setFontType] = useState(local);
+    const [fontTypeOption, setFontTypeOption] = useState();
 
     useEffect(() => {
-        localStorage.setItem("fonttheme", fontType);
-    }, [fontType]);
+        window.localStorage.setItem("fonttheme", `${fontType}`);
+
+        setFontTypeOption(`${fontType}`);
+
+        const html = document.getElementsByTagName("html")[0];
+        html.style.fontFamily = `${fontType}`
+    }, [local, fontType]);
 
     useEffect(() => {
         if (lightMode) {
-            localStorage.setItem("themeMode", "light");
+            window.localStorage.setItem("themeMode", "light");
         } else {
-            localStorage.setItem("themeMode", "dark");
+            window.localStorage.setItem("themeMode", "dark");
         }
 
-        const selectedTheme = localStorage.getItem("themeMode");
+        const selectedTheme = window.localStorage.getItem("themeMode");
         const html = document.getElementsByTagName("html")[0];
 
         html.classList.remove("light");
@@ -48,7 +67,7 @@ const Navbar = ({ main_page }) => {
 
   return (
     <MaxWidthWrapper>
-        <nav className={clsx(`w-full flex flex-col font-${fontType}`, {
+        <nav style={{fontFamily: `${fontTypeOption}`}} className={clsx("w-full flex flex-col", {
             "min-h-max md:min-h-96 items-center pt-52 pb-10 bg-primary-foreground px-10 md:px-20 rounded-bl-xl rounded-br-xl": main_page === true,
             "mt-14": main_page === false,
         })}>
@@ -64,27 +83,28 @@ const Navbar = ({ main_page }) => {
                         <span className="mt-1 font-semibold">Dictionary</span>
                     </div>
 
-                    <FontAwesomeIcon icon={faBook} className="text-4xl text-gray-500"/>
+                    <FontAwesomeIcon icon={faBook} className="text-gray-500 w-10 h-10"/>
                 </Link>
                 
                 <div className="flex justify-center items-center flex-wrap">
                     <div className="border-r-[1px] border-r-gray-300 flex pr-5">
-                        <select defaultValue={fontType} onChange={(option) => setFontType(option.target.value)} className={clsx("bg-primary-foreground w-max text-purple-500", {
-                            "bg-card": main_page === false
+                        <select value={fontTypeOption} onChange={(option) => setFontType(option.target.value)} className={clsx("w-max text-purple-500", {
+                            "bg-card": main_page === false,
+                            "bg-primary-foreground": main_page === true
                         })}>
                             <option value="serif" className="font-serif">Serif</option>
-                            <option value="sans" className="font-sans">Sans Serif</option>
-                            <option value="mono" className="font-mono">Monospace</option>
+                            <option value="sans-serif" className="font-sans">Sans Serif</option>
+                            <option value="monospace" className="font-mono">Monospace</option>
                         </select>
                     </div>
 
                     <Switch checked={lightMode} onClick={() => handleTheme()} className="ml-5"/>
 
                     {lightMode === true ? (
-                        <FontAwesomeIcon icon={faMoon} className="text-2xl ml-5 cursor-pointer text-gray-500"/>
+                        <FontAwesomeIcon icon={faMoon} className="text-2xl ml-5 cursor-pointer text-gray-500 w-6 h-6"/>
                     )
                     : (
-                        <FontAwesomeIcon icon={faSun} className="text-2xl ml-5 cursor-pointer text-gray-500"/>
+                        <FontAwesomeIcon icon={faSun} className="text-2xl ml-5 cursor-pointer text-gray-500 w-6 h-6"/>
                     )}
                 </div>
             </div>

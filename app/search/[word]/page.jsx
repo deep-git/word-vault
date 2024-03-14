@@ -29,7 +29,7 @@ const page = () => {
 
   return (
     <MaxWidthWrapper className="px-10">
-        <div className="mt-10 min-h-screen text-text_main">
+        <div className="mt-10 min-h-screen">
             {dictionaryContent && dictionaryContent !== "" ? (
                 <div>
                     <div className="flex justify-between items-center flex-wrap">
