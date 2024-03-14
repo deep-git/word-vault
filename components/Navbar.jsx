@@ -12,9 +12,9 @@ import { Button } from './ui/button';
 
 const Navbar = ({ main_page }) => {
 
-    const [lightMode, setLightMode] = useState(localStorage.getItem("themeMode") === "light" ? true : false);
+    const [lightMode, setLightMode] = useState(typeof window !== "undefined" ? (window.localStorage.getItem("themeMode") === "light" ? true : false) : false);
     const [word, setWord] = useState("");
-    const [fontType, setFontType] = useState(localStorage.getItem("fonttheme") || "serif");
+    const [fontType, setFontType] = useState(typeof window !== "undefined" ? (localStorage.getItem("fonttheme") || "serif") : "serif");
 
     useEffect(() => {
         localStorage.setItem("fonttheme", fontType);
